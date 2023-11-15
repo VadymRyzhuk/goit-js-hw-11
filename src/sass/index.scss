@@ -1,2 +1,38 @@
-@import './common';
-@import './example';
+// @import './common';
+// @import './example';
+
+
+img {
+    width: 400px;
+    height: 250px;
+}
+
+p {
+padding-left: 10px;
+}
+
+.gallery {
+    margin-top: 50px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.photo-card {
+    border: 1px solid brown;
+    border-radius: 3px;
+}
+
+.load-more {
+    display: block;
+    margin: 0 auto;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+}
+
+.hidden {
+    display: none;
+}
