@@ -1,5 +1,5 @@
-import axios from 'axios';
 import Notiflix from 'notiflix';
+import { searchImage } from './api';
 
 const refs = {
   submitForm: document.querySelector('.search-form'),
@@ -10,40 +10,29 @@ const refs = {
 let currentPage = 1;
 
 refs.submitForm.addEventListener('submit', async event => {
-  event.preventDefault();
-  const searchQuery = event.target.elements.searchQuery.value;
-  currentPage = 1; // Скидаємо сторінку при новому пошуковому запиті
-  const data = await searchImage(searchQuery, currentPage);
-  handleSearchResult(data);
-});
-
-refs.loadMoreBtn.addEventListener('click', async () => {
-  const searchQuery = refs.submitForm.elements.searchQuery.value;
-  currentPage += 1; // Збільшуємо сторінку для нового запиту
-  const data = await searchImage(searchQuery, currentPage);
-  appendSearchResult(data);
-});
-
-async function searchImage(query, page) {
-  const url = 'https://pixabay.com/api/';
-  const params = {
-    key: '40694926-c70ea5b8520dbc31e47b270cb',
-    q: query,
-    image_type: 'photo',
-    orientation: 'horizontal',
-    safesearch: true,
-    page: page,
-    per_page: '40',
-  };
-
   try {
-    const response = await axios.get(url, { params });
-    return response.data;
+    event.preventDefault();
+    const searchQuery = event.target.elements.searchQuery.value;
+    currentPage = 1; // ===========================Скидаємо сторінку при новому пошуковому запиті
+    const data = await searchImage(searchQuery, currentPage);
+    handleSearchResult(data);
   } catch (error) {
     console.error('Error fetching images:', error.message);
     throw error;
   }
-}
+});
+
+refs.loadMoreBtn.addEventListener('click', async () => {
+  try {
+    const searchQuery = refs.submitForm.elements.searchQuery.value;
+    currentPage += 1;
+    const data = await searchImage(searchQuery, currentPage);
+    appendSearchResult(data);
+  } catch (error) {
+    console.error('Error fetching images:', error.message);
+    throw error;
+  }
+});
 
 function cardTemplate({
   webformatURL,
@@ -85,9 +74,11 @@ function handleSearchResult(data) {
     refs.loadMoreBtn.style.display = 'block';
     const markup = hits.map(cardTemplate).join('');
     refs.gallery.innerHTML = markup;
+
+    const totalHits = data.totalHits || data.total || 0;
+    Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
   }
 
-  // Перевірка, чи досягнуто кінця результатів
   if (hits.length < 40 && currentPage > 1) {
     refs.loadMoreBtn.style.display = 'none';
   }
